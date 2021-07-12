@@ -1,11 +1,13 @@
 ## RemovePostFX Summary
 ------------------------
 This mod allows you to remove the screenshake and explosive rainbow effect, as well as other graphical changes to boost performance.
+
 ------------------------
 ## Installing
 ------------------------
 Use the Thunderstore Mod Manager to install. 
 If you prefer to manually install, move RemovePostFX.dll into your ROUNDS/BepInEx/plugins folder. 
+
 ------------------------
 ## Usage
 ------------------------
@@ -30,13 +32,13 @@ Disabling the field will return your players glowiness to normal.
 ## **Remove the light from the top of the map, and the shadows it causes**
 Enabling this in the ingame GUI (accessed via F1) will remove the light from the game. 
 Disabling the field will return the game to it's original lightness.
+
 ------------------------
 
 ## Questions / Bug Reports / Suggestions
 ------------------------
 If you have any issues, you can contact me @Ascyst#4219 on the ROUNDS modding community Discord: https://discord.gg/zUtsjXWeWk
 
-Github Source: https://github.com/Ascyst/Remove-PostFX
 ------------------------
 ## Changelog
 ------------------------
@@ -49,6 +51,7 @@ Github Source: https://github.com/Ascyst/Remove-PostFX
 		- Ability to remove terrain effects
 		- Ability to remove player glow effects
 		- Ability to remove light
+
 ------------------------
 ## Thank you
 ------------------------
