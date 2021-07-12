@@ -88,7 +88,7 @@ namespace RemovePostFX
             var fgParticles = GameObject.Find("FrontParticles");
             if (fgParticles != null) fgParticles.SetActive(RemovePostFX.rTerrain.Value);
 
-            var lightShake = GameObject.Find("FrontParticles");
+            var lightShake = GameObject.Find("Light");
             if (lightShake != null) lightShake.SetActive(RemovePostFX.rTerrain.Value);
         }
     }
