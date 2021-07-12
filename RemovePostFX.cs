@@ -46,12 +46,12 @@ namespace RemovePostFX
 
         private void Screenshaker_OnGameFeel(On.Screenshaker.orig_OnGameFeel orig, Screenshaker self, Vector2 feelDirection)
         {
-            orig(self, feelDirection * (rShakes.Value ? 0 : 1));
+            orig(self, feelDirection * (rShakes.Value ? 1 : 0));
         }
 
         private void ChomaticAberrationFeeler_OnGameFeel(On.ChomaticAberrationFeeler.orig_OnGameFeel orig, ChomaticAberrationFeeler self, Vector2 feelDirection)
         {
-            orig(self, feelDirection * (rRain.Value ? 0 : 1));
+            orig(self, feelDirection * (rRain.Value ? 1 : 0));
         }
 
 
@@ -89,7 +89,7 @@ namespace RemovePostFX
             if (fgParticles != null) fgParticles.SetActive(RemovePostFX.rTerrain.Value);
 
             var lightShake = GameObject.Find("Light");
-            if (lightShake != null) lightShake.SetActive(RemovePostFX.rTerrain.Value);
+            if (lightShake != null) lightShake.SetActive(RemovePostFX.rLight.Value);
         }
     }
 }
