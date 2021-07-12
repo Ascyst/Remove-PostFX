@@ -81,9 +81,15 @@ namespace RemovePostFX
                     system.SetPropertyValue("enableEmission", RemovePostFX.rPGlow.Value);
                 }
             }
-            GameObject.Find("BackgroudParticles").SetActive(RemovePostFX.rTerrain.Value);
-            GameObject.Find("FrontParticles").SetActive(RemovePostFX.rTerrain.Value);
-            GameObject.Find("LightShake").SetActive(RemovePostFX.rLight.Value);
+
+            var bgParticles = GameObject.Find("BackgroudParticles");
+            if (bgParticles != null) bgParticles.SetActive(RemovePostFX.rTerrain.Value);
+
+            var fgParticles = GameObject.Find("FrontParticles");
+            if (fgParticles != null) fgParticles.SetActive(RemovePostFX.rTerrain.Value);
+
+            var lightShake = GameObject.Find("FrontParticles");
+            if (lightShake != null) lightShake.SetActive(RemovePostFX.rTerrain.Value);
         }
     }
 }
