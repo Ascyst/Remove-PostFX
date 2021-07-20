@@ -1,9 +1,9 @@
 ﻿using BepInEx;
+using BepInEx.Configuration;
+using BepInEx.Logging;
 using HarmonyLib;
-using System;
 using UnboundLib;
 using UnityEngine;
-using BepInEx.Configuration;
 
 namespace RemovePostFX
 {
@@ -26,10 +26,20 @@ namespace RemovePostFX
         private void Start()
         {
             new Harmony(ModID).PatchAll();
-            Unbound.RegisterGUI(ModName, new Action(this.DrawGUI));
+            //            Unbound.RegisterGUI(ModName, new Action(this.DrawGUI));
+            Unbound.RegisterMenu("Remove PostFX", () => { }, DrawOtherGUI);
         }
 
-        private void DrawGUI()
+        private void DrawOtherGUI(GameObject obj)
+        {
+            Unbound.CreateText("Remove Post Effects Options", 85, obj, out _);
+            Unbound.CreateToggle(rShakes.Value, "Remove Screen Shakes", 60, obj, flag => { rShakes.Value = flag; });
+            Unbound.CreateToggle(rRain.Value, "Remove Chromatic Aberration", 60, obj, flag => { rRain.Value = flag; });
+            Unbound.CreateToggle(rTerrain.Value, "Remove Ground Effects", 60, obj, flag => { rLight.Value = flag; });
+            Unbound.CreateToggle(rPGlow.Value, "Remove Player Glow Effects", 60, obj, flag => { rTerrain.Value = flag; });
+            Unbound.CreateToggle(rLight.Value, "Remove Light", 60, obj, flag => { rPGlow.Value = flag; });
+        }
+/*        private void DrawGUI()
         {
             bool newrShakes = !GUILayout.Toggle(rShakes.Value, "Remove Screen Shakes");
             bool newrRain = !GUILayout.Toggle(rRain.Value, "Remove Chromatic Aberration (Rainbow Explosions)");
@@ -43,15 +53,15 @@ namespace RemovePostFX
             rRain.Value = newrRain;
             rShakes.Value = newrShakes;
         }
-
+*/
         private void Screenshaker_OnGameFeel(On.Screenshaker.orig_OnGameFeel orig, Screenshaker self, Vector2 feelDirection)
         {
-            orig(self, feelDirection * (rShakes.Value ? 0 : 1));
+            orig(self, feelDirection * (rShakes.Value ? 1 : 0));
         }
 
         private void ChomaticAberrationFeeler_OnGameFeel(On.ChomaticAberrationFeeler.orig_OnGameFeel orig, ChomaticAberrationFeeler self, Vector2 feelDirection)
         {
-            orig(self, feelDirection * (rRain.Value ? 0 : 1));
+            orig(self, feelDirection * (rRain.Value ? 1 : 0));
         }
 
 
@@ -74,16 +84,33 @@ namespace RemovePostFX
     {
         private static void Postfix()
         {
-            foreach (var system in UnityEngine.Object.FindObjectsOfType<ParticleSystem>())
+            Debug.Log("Adding Camera");
+            // Only method I could find to consistently remove the background color from scene to scene.
+            Camera bgCam = GameObject.Find("Post_Background").GetOrAddComponent<Camera>();
+            bgCam.SetPropertyValue("backgroundColor", Color.black);
+            Debug.Log("Added Camera, set bgcolor");
+            Debug.Log("Removing PGlow");
+            foreach (var system in GameObject.FindObjectsOfType<ParticleSystem>())
             {
                 if (system.gameObject.name.Contains("Skin_Player"))
                 {
                     system.SetPropertyValue("enableEmission", RemovePostFX.rPGlow.Value);
                 }
             }
-            GameObject.Find("BackgroudParticles").SetActive(RemovePostFX.rTerrain.Value);
-            GameObject.Find("FrontParticles").SetActive(RemovePostFX.rTerrain.Value);
+
+            Debug.Log("Removed PGlow");
+            Debug.Log("Removing BGPart");
+            GameObject.Find("BackgroudParticles").SetActive(!RemovePostFX.rTerrain.Value);
+            Debug.Log("Removed BGPart");
+            Debug.Log("Removing FPart");
+            GameObject.Find("FrontParticles").SetActive(!RemovePostFX.rTerrain.Value);
+            Debug.Log("Removed FPart");
+            Debug.Log("Removing Light");
             GameObject.Find("LightShake").SetActive(RemovePostFX.rLight.Value);
+            Debug.Log("Removed Light");
+            Debug.Log("Set Camera active/inactive");
+            bgCam.SetPropertyValue("enabled", RemovePostFX.rTerrain.Value);
+            Debug.Log("Camera flip flops fine, what breaking? ");
         }
     }
 }
