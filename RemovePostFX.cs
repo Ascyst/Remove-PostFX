@@ -4,6 +4,7 @@ using System;
 using UnboundLib;
 using UnityEngine;
 using BepInEx.Configuration;
+using UnboundLib.Utils.UI;
 
 namespace RemovePostFX
 {
@@ -26,32 +27,28 @@ namespace RemovePostFX
         private void Start()
         {
             new Harmony(ModID).PatchAll();
-            Unbound.RegisterGUI(ModName, new Action(this.DrawGUI));
+            Unbound.RegisterMenu(ModName, () => { }, DrawGUI, null, true);
         }
 
-        private void DrawGUI()
+        private void DrawGUI(GameObject menu)
         {
-            bool newrShakes = !GUILayout.Toggle(rShakes.Value, "Remove Screen Shakes");
-            bool newrRain = !GUILayout.Toggle(rRain.Value, "Remove Chromatic Aberration (Rainbow Explosions)");
-            bool newrTerrain = !GUILayout.Toggle(rTerrain.Value, "Remove colored ground (decent FPS boost)");
-            bool newrPGlow = !GUILayout.Toggle(rPGlow.Value, "Remove the glow effect around players. Also removes the pesky gun visual (overrated)");
-            bool newrLight = !GUILayout.Toggle(rLight.Value, "Remove the light from the top of the map, and the shadows it causes");
+            MenuHandler.CreateToggle(rShakes.Value, "Remove Shaking", menu, null);
+            MenuHandler.CreateToggle(rRain.Value, "Remove Chromatic Aberration (Rainbow Explosions)", menu, null);
+            MenuHandler.CreateToggle(rTerrain.Value, "Remove Terrain Effects (Large FPS Boost)", menu, null);
+            MenuHandler.CreateToggle(rPGlow.Value, "Remove Glow Around Player/Gun Model", menu, null);
+            MenuHandler.CreateToggle(rLight.Value, "Remove Roof Light", menu, null);
 
-            rPGlow.Value = newrPGlow;
-            rTerrain.Value = newrTerrain;
-            rLight.Value = newrLight;
-            rRain.Value = newrRain;
-            rShakes.Value = newrShakes;
         }
 
         private void Screenshaker_OnGameFeel(On.Screenshaker.orig_OnGameFeel orig, Screenshaker self, Vector2 feelDirection)
         {
-            orig(self, feelDirection * (rShakes.Value ? 1 : 0));
+            orig(self, feelDirection * (rShakes.Value ? 0 : 1));
+
         }
 
         private void ChomaticAberrationFeeler_OnGameFeel(On.ChomaticAberrationFeeler.orig_OnGameFeel orig, ChomaticAberrationFeeler self, Vector2 feelDirection)
         {
-            orig(self, feelDirection * (rRain.Value ? 1 : 0));
+            orig(self, feelDirection * (rRain.Value ? 0 : 1));
         }
 
 
@@ -78,18 +75,18 @@ namespace RemovePostFX
             {
                 if (system.gameObject.name.Contains("Skin_Player"))
                 {
-                    system.SetPropertyValue("enableEmission", RemovePostFX.rPGlow.Value);
+                    system.SetPropertyValue("enableEmission", !RemovePostFX.rPGlow.Value);
                 }
             }
 
             var bgParticles = GameObject.Find("BackgroudParticles");
-            if (bgParticles != null) bgParticles.SetActive(RemovePostFX.rTerrain.Value);
+            if (bgParticles != null) bgParticles.SetActive(!RemovePostFX.rTerrain.Value);
 
             var fgParticles = GameObject.Find("FrontParticles");
-            if (fgParticles != null) fgParticles.SetActive(RemovePostFX.rTerrain.Value);
+            if (fgParticles != null) fgParticles.SetActive(!RemovePostFX.rTerrain.Value);
 
             var lightShake = GameObject.Find("Light");
-            if (lightShake != null) lightShake.SetActive(RemovePostFX.rLight.Value);
+            if (lightShake != null) lightShake.SetActive(!RemovePostFX.rLight.Value);
         }
     }
 }
